@@ -5,6 +5,8 @@
     padding: 0.5em;
     display: flex;
     flex-direction: row;
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
 }
 
 .content__column {
@@ -12,7 +14,22 @@
     flex-direction: column;
 }
 
+.content__column--action {
+    flex-grow: 1;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin-right: 1em;
+}
+
 .content__item {
+    margin: 0.3em 0;
+}
+
+.content__item__title-wrapper {
+    display: flex;
+    flex-direction: row;
 }
 
 .content__item__title {
@@ -24,6 +41,15 @@
     padding: 0.3em;
     margin: 0 0.5em;
 }
+.content__item__title--horses {
+    width: 9rem;
+}
+
+.content__item__content-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.5em;
+}
 
 .content__item__content {
     font-family: "DotMatrix", sans-serif;
@@ -33,5 +59,40 @@
     letter-spacing: 3px;
     margin: 0 0.5em;
     font-size: 1.1em;
-    color: #c28740;
+    color: #ffc987;
+}
+
+.content__item__content--horses {
+    width: 9rem;
+}
+
+.content__item__content--bets {
+    margin: 0;
+    margin-right: 0.3em;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.5em 1em;
+    background-color: #ffc987;
+    border-radius: 4px;
+    border: none;
+    font-size: 1em;
+    min-width: 8em;
+    cursor: pointer;
+    min-height: 2.7em;
+    position: relative;
+    font-family: "Roboto", sans-serif;
+}
+
+.ct-toast-success,
+.ct-toast-warn,
+.ct-toast-info,
+.ct-toast-error {
+    font-family: "Roboto", sans-serif;
+}
+
+.btn--admin {
+    background-color: #313131;
+    color: #f2f2f2;
 }
