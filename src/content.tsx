@@ -44,9 +44,23 @@ const Content: React.FC = () => {
     const getContractDetails = async () => {
         const contract = await Tezos.contract.at(contractId);
         const storage: any = await contract.storage();
-        console.log(storage);
         setTrack(storage?.track);
-        setHorses(storage?.horses);
+
+        const horses: HorseType[] = [];
+        const horsesInStorage: any = storage?.horses?.valueMap.entries();
+        for (let horseDetail of horsesInStorage) {
+            const id = horseDetail[0];
+            const horseNameDetails = horseDetail[1].valueMap.entries();
+            let hName = "";
+            for (let horseName of horseNameDetails) {
+                hName = horseName[1];
+            }
+            horses.push({
+                horseId: id,
+                horseName: hName,
+            });
+        }
+        setHorses(horses);
     };
     const addHorse = async () => {
         Tezos.contract
@@ -55,7 +69,7 @@ const Content: React.FC = () => {
                 cogoToast.info("Adding horse");
                 setAddHorseLoading(true);
                 return contract.methods
-                    .addHorse(1, "Test horse", "426c616168")
+                    .addHorse(2, "A fresh horse", "426c616168")
                     .send();
             })
             .then((op) => {
@@ -86,6 +100,7 @@ const Content: React.FC = () => {
         // }, 1000);
         getTotalBalance();
         getContractDetails();
+        // console.log(horses);
         // return () => clearInterval(interval);
     }, []);
     return (
@@ -124,50 +139,21 @@ const Content: React.FC = () => {
                             Bets
                         </div>
                     </div>
-                    <div className="content__item__content-wrapper">
-                        <div className="content__item__content content__item__content--horses">
-                            {"Pickle Rake"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"4"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"1"}
-                        </div>
-                    </div>
-                    <div className="content__item__content-wrapper">
-                        <div className="content__item__content content__item__content--horses">
-                            {"Seabiscuit"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"3"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"2"}
-                        </div>
-                    </div>
-                    <div className="content__item__content-wrapper">
-                        <div className="content__item__content content__item__content--horses">
-                            {"Blaze"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"2"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"1"}
-                        </div>
-                    </div>
-                    <div className="content__item__content-wrapper">
-                        <div className="content__item__content content__item__content--horses">
-                            {"Shadowfax"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"4"}
-                        </div>
-                        <div className="content__item__content content__item__content--bets">
-                            {"1"}
-                        </div>
-                    </div>
+                    {horses?.map((horse) => {
+                        return (
+                            <div className="content__item__content-wrapper">
+                                <div className="content__item__content content__item__content--horses">
+                                    {horse?.horseName}
+                                </div>
+                                <div className="content__item__content content__item__content--bets">
+                                    {"4"}
+                                </div>
+                                <div className="content__item__content content__item__content--bets">
+                                    {"1"}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
             <div className="content__column content__column--action">
