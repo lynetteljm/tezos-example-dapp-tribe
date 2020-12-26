@@ -1,3 +1,5 @@
+The project is a COVID-19 symptom tracker where a user will be able to check if they have any symptoms listed in the app, and the number of days the symptoms have been experienced. The user's selection result will be stored in the Tezos smart contract against their address.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

@@ -6,13 +6,14 @@ import cogoToast from "cogo-toast";
 
 import "./content.css";
 
-type HorseType = {
-    horseId: String;
-    horseName: String;
+type BackgroundType = {
+    BackgroundId: String;
+    BackgroundName: String;
 };
 
-type BetType = {
-    [sender: string]: { [horseId: string]: number };
+type RecordType = {
+    RecordId: String;
+    RecordName: String;
 };
 
 const Content: React.FC = () => {
@@ -20,15 +21,15 @@ const Content: React.FC = () => {
     const [totalBalance, setTotalBalance] = useState<undefined | number>(
         undefined
     );
-    const [track, setTrack] = useState<undefined | string>(undefined);
-    const [horses, setHorses] = useState<undefined | HorseType[]>(undefined);
-    const [bets, setBets] = useState<undefined | BetType[]>(undefined);
+    const [CovidStatus, setCovidStatus] = useState<undefined | string>(undefined);
+    const [Background, setBackground] = useState<undefined | BackgroundType[]>(undefined);
+    const [Records, setRecords] = useState<undefined | RecordType[]>(undefined);
 
-    const [addHorseLoading, setAddHorseLoading] = useState(false);
-    const [runRaceLoading, setRunRaceLoading] = useState(false);
-    const [placeBetLoading, setPlaceBetLoading] = useState(false);
+    const [changeStatusLoading, setChangeStatusLoading] = useState(false);
+    const [addBackgroundLoading, setAddBackgroundLoading] = useState(false);
+    const [addSympTestLoading, setAddSympTestLoading] = useState(false);
 
-    const contractId = "KT1R1LpgrWpDs6rSAwLDXyyKPtbGB9XBpRQB";
+    const contractId = "KT1Jt43289yMZdSoNumf7rhoziLPKSo9GxhZ";
     Tezos.setProvider({
         rpc: "https://api.tez.ie/rpc/carthagenet",
         signer: new InMemorySigner(
@@ -44,32 +45,35 @@ const Content: React.FC = () => {
     const getContractDetails = async () => {
         const contract = await Tezos.contract.at(contractId);
         const storage: any = await contract.storage();
-        setTrack(storage?.track);
+        setCovidStatus(storage?.covidStatus);
 
-        const horses: HorseType[] = [];
-        const horsesInStorage: any = storage?.horses?.valueMap.entries();
-        for (let horseDetail of horsesInStorage) {
-            const id = horseDetail[0];
-            const horseNameDetails = horseDetail[1].valueMap.entries();
-            let hName = "";
-            for (let horseName of horseNameDetails) {
-                hName = horseName[1];
+        const Background: BackgroundType[] = [];
+        const BackgroundInStorage: any = storage?.Background?.valueMap.entries();
+        for (let BackgroundDetail of BackgroundInStorage) {
+            for (let BackgroundInfo of BackgroundDetail){
+            const id = BackgroundDetail[0];
+            const BackgroundNameDetails = BackgroundInfo[1].valueMap.entries();
+            let bName = "";
+            for (let backgroundName of BackgroundNameDetails) {
+                bName = backgroundName[1];
             }
-            horses.push({
-                horseId: id,
-                horseName: hName,
+            
+            Background.push({
+                BackgroundId: id,
+                BackgroundName: bName,
             });
         }
-        setHorses(horses);
+        }
+        setBackground(Background);
     };
-    const addHorse = async () => {
+    const addBackground = async () => {
         Tezos.contract
             .at(contractId)
             .then((contract) => {
-                cogoToast.info("Adding horse");
-                setAddHorseLoading(true);
+                cogoToast.info("Adding background");
+                setAddBackgroundLoading(true);
                 return contract.methods
-                    .addHorse(2, "A fresh horse", "426c616168")
+                    .addBackground("16", "No","510122", "Yes", "426c616168")
                     .send();
             })
             .then((op) => {
@@ -77,49 +81,53 @@ const Content: React.FC = () => {
                 return op.confirmation(3).then(() => op.hash);
             })
             .then((hash) => {
-                setAddHorseLoading(false);
-                cogoToast.success("Successfully added the horse!");
+                setAddBackgroundLoading(false);
+                cogoToast.success("Successfully added Background");
             })
             .catch((error) => {
-                setAddHorseLoading(false);
+                setAddBackgroundLoading(false);
                 console.log(JSON.stringify(error));
                 cogoToast.error(
-                    `Could not add horse. Error:${JSON.stringify(error)}`
+                    `Could not add background. Error:${JSON.stringify(error)}`
                 );
             });
     };
     useEffect(() => {
-        // Tezos.setProvider({
-        //     rpc: "https://api.tez.ie/rpc/carthagenet",
-        //     // signer: new InMemorySigner(
-        //     // "edskS6rCh5wPWUd2D2vPRDmxnQppAr1V1e4MksLjQh1YgecFv4eYUaEYkWKFP6nYQJtopN9JT8Ms2vjoCRA4J2cUfRSe84HwZv"
-        //     // ),
-        // });
-        // const interval = setInterval(() => {
-        //     setCurrentTime(new Date());
-        // }, 1000);
+         Tezos.setProvider({
+             rpc: "https://api.tez.ie/rpc/carthagenet",
+              signer: new InMemorySigner(
+              "edskS6rCh5wPWUd2D2vPRDmxnQppAr1V1e4MksLjQh1YgecFv4eYUaEYkWKFP6nYQJtopN9JT8Ms2vjoCRA4J2cUfRSe84HwZv"
+              ),
+         });
+         const interval = setInterval(() => {
+             setCurrentTime(new Date());
+         }, 1000);
         getTotalBalance();
         getContractDetails();
-        // console.log(horses);
-        // return () => clearInterval(interval);
+         console.log(Background);
+         return () => clearInterval(interval);
     }, []);
     return (
         <div className="content">
             <div className="content__column">
                 <div className="content__item">
-                    <div className="content__item__title">Track</div>
+                    <div className="content__item__title">Covid-19 Status</div>
                     <div className="content__item__content">
-                        {track !== undefined ? `${track}` : ""}
+                        {CovidStatus !== undefined ? `${CovidStatus}` : ""}
                     </div>
                 </div>
+                
                 <div className="content__item">
-                    <div className="content__item__title">Total pool</div>
+                    <div className="content__item__title">Date</div>
                     <div className="content__item__content">
-                        {totalBalance !== undefined ? `${totalBalance}` : ""}
+                        {currentTime.getDate()}/
+                        {currentTime.getMonth()}/
+                        {currentTime.getFullYear()}
                     </div>
-                </div>
+                </div>    
+
                 <div className="content__item">
-                    <div className="content__item__title">Time of day</div>
+                    <div className="content__item__title">Time</div>
                     <div className="content__item__content">
                         {currentTime.getHours()}:
                         {currentTime.getMinutes() < 10 ? "0" : ""}
@@ -133,23 +141,23 @@ const Content: React.FC = () => {
                 <div className="content__item">
                     <div className="content__item__title-wrapper">
                         <div className="content__item__title content__item__title--horses">
-                            Horses
+                            Background
                         </div>
                         <div className="content__item__title content__item__title--bets">
-                            Bets
+                            Records
                         </div>
                     </div>
-                    {horses?.map((horse) => {
+                    {Background?.map((Background) => {
                         return (
                             <div className="content__item__content-wrapper">
                                 <div className="content__item__content content__item__content--horses">
-                                    {horse?.horseName}
-                                </div>
-                                <div className="content__item__content content__item__content--bets">
-                                    {"4"}
+                                    {Background?.BackgroundName}
                                 </div>
                                 <div className="content__item__content content__item__content--bets">
                                     {"1"}
+                                </div>
+                                <div className="content__item__content content__item__content--bets">
+                                    {"4"}
                                 </div>
                             </div>
                         );
@@ -160,30 +168,30 @@ const Content: React.FC = () => {
                 <div className="content__item">
                     <button
                         className="btn btn--admin"
-                        onClick={() => addHorse()}
+                        onClick={() => addBackground()}
                     >
-                        {addHorseLoading ? (
+                        {addBackgroundLoading ? (
                             <span className="loadingSpinner"></span>
                         ) : (
-                            "Add horse"
+                            "Add Background"
                         )}
                     </button>
                 </div>
                 <div className="content__item">
                     <button className="btn btn--admin">
-                        {runRaceLoading ? (
+                        {addSympTestLoading ? (
                             <span className="loadingSpinner"></span>
                         ) : (
-                            "Run race"
+                            "Take Symptom Test"
                         )}
                     </button>
                 </div>
                 <div className="content__item">
                     <button className="btn btn">
-                        {placeBetLoading ? (
+                        {changeStatusLoading ? (
                             <span className="loadingSpinner"></span>
                         ) : (
-                            "Place bet"
+                            "Change Status"
                         )}
                     </button>
                 </div>
